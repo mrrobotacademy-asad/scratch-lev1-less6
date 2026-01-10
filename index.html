@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mr Robot Academy - التحدي الذكي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #00cec9;
+            --correct: #2ed573;
+            --wrong: #ff4757;
+            --warning: #f1c40f;
+            --bg: #0f0c29;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --radius: 15px;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at center, #1e1b4b, #0f0c29);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .header { text-align: center; padding: 25px; width: 100%; }
+        
+        .logo-img { 
+            width: 220px; height: auto; max-height: 100px;
+            object-fit: contain; border: 3px solid var(--secondary);
+            border-radius: 10px; padding: 5px;
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 20px rgba(0,206,201,0.3);
+        }
+
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px; padding: 25px;
+            width: 90%; max-width: 800px;
+            margin-bottom: 50px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        /* --- قسم الصور المطور --- */
+        .gallery-section {
+            margin: 20px 0 30px 0; padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .gallery-title {
+            color: var(--secondary); margin-bottom: 15px;
+            font-size: 1.3rem; text-align: right; font-weight: bold;
+        }
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .gallery-item {
+            position: relative; overflow: hidden;
+            border-radius: 12px; border: 2px solid rgba(255,255,255,0.1);
+            background: #000; aspect-ratio: 16 / 9;
+            display: flex; align-items: center; justify-content: center;
+            cursor: zoom-in; transition: 0.3s;
+        }
+        .gallery-item img {
+            max-width: 100%; max-height: 100%;
+            object-fit: contain; transition: 0.5s;
+        }
+        .gallery-item:hover { border-color: var(--secondary); transform: scale(1.03); }
+
+        /* --- نافذة تكبير الصورة (Lightbox) --- */
+        #lightbox {
+            display: none; position: fixed; z-index: 1000;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center; align-items: center;
+            cursor: zoom-out;
+        }
+        #lightbox img {
+            max-width: 90%; max-height: 80%;
+            border: 3px solid var(--secondary);
+            border-radius: 10px; box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+        .close-lightbox {
+            position: absolute; top: 20px; right: 30px;
+            color: white; font-size: 40px; font-weight: bold; cursor: pointer;
+        }
+
+        /* --- بقية التنسيقات --- */
+        .explanation-slider {
+            position: relative; background: rgba(0,0,0,0.3);
+            border-radius: var(--radius); padding: 30px; margin: 20px 0;
+            min-height: 250px; display: flex; flex-direction: column;
+            justify-content: center; border-bottom: 5px solid var(--primary);
+        }
+        .explanation-card h3 { color: var(--secondary); margin-top: 0; font-size: 1.6rem; }
+        .slider-nav { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .nav-btn {
+            background: var(--primary); border: none; color: white;
+            padding: 10px 25px; border-radius: 30px; cursor: pointer;
+            font-weight: bold; transition: 0.2s;
+        }
+        .nav-btn:disabled { background: #444; cursor: not-allowed; }
+        .code-block {
+            background: #1e1e1e; color: #58D68D; padding: 15px;
+            font-family: 'Fira Code', monospace; direction: ltr;
+            border-radius: 8px; margin: 15px 0; font-size: 1.1rem;
+        }
+        .status-bar {
+            display: flex; justify-content: space-between; background: rgba(0,0,0,0.4);
+            padding: 15px; border-radius: var(--radius); margin-bottom: 20px;
+        }
+        .code-display {
+            background: #000; padding: 25px; border-radius: var(--radius); font-family: 'Fira Code', monospace;
+            direction: ltr; text-align: left; border-left: 5px solid var(--primary); margin-bottom: 20px; font-size: 1.4rem;
+        }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .option-btn {
+            background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1);
+            padding: 18px; color: white; cursor: pointer; border-radius: var(--radius); transition: 0.3s;
+        }
+        .option-btn:hover { background: var(--primary); }
+        .option-btn.selected { background: var(--primary); border-color: white; }
+        .btn-main {
+            background: linear-gradient(to right, var(--primary), #8e44ad);
+            color: white; border: none; padding: 18px 40px;
+            cursor: pointer; font-weight: 900; border-radius: 50px; font-size: 1.3rem;
+        }
+        .control-group { display: flex; gap: 10px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
+        .hidden { display: none !important; }
+        input[type="text"] {
+            width: 80%; padding: 15px; background: rgba(0,0,0,0.3); border: 2px solid var(--primary); color: white; border-radius: var(--radius); text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="lightbox" onclick="closeImg()">
+    <span class="close-lightbox">&times;</span>
+    <img id="lightbox-img" src="">
+</div>
+
+<div class="header">
+    <img src="logo.png" alt="Mr Robot Logo" class="logo-img" onerror="this.onerror=null; this.src='https://via.placeholder.com/220x80/6c5ce7/ffffff?text=MR+ROBOT+ACADEMY';">
+    <h1 style="margin:15px 0; font-size: 2.2rem;">Mr Robot Academy</h1>
+    <h6 style="margin:2px 0; font-size: 1.2rem;">مهندس/ أندرو مجدي - Phone: 01285529570</h6>
+</div>
+
+<div class="container">
+    <div id="start-screen">
+        <h2 style="color:var(--warning);">🚀 رحلة البرمجة مع مستر روبوت</h2>
+        
+        <div class="gallery-section">
+            <div class="gallery-title">📸 اضغط على الصورة لتكبيرها:</div>
+            <div class="images-grid">
+                <div class="gallery-item" onclick="openImg(this)">
+                    <img src="a1.png" onerror="this.src='https://via.placeholder.com/600x400/1e1b4b/ffffff?text=Project+Code+1';">
+                </div>
+                <div class="gallery-item" onclick="openImg(this)">
+                    <img src="a2.png" onerror="this.src='https://via.placeholder.com/600x400/1e1b4b/ffffff?text=Project+Code+1';">
+                </div>
+                <div class="gallery-item" onclick="openImg(this)">
+                    <img src="a3.png" onerror="this.src='https://via.placeholder.com/600x400/1e1b4b/ffffff?text=Project+Code+1';">
+                </div>
+                <div class="gallery-item" onclick="openImg(this)">
+                    <img src="a4.png" onerror="this.src='https://via.placeholder.com/600x400/1e1b4b/ffffff?text=Project+Code+1';">
+                </div>
+                <div class="gallery-item" onclick="openImg(this)">
+                    <img src="a5.jpeg" onerror="this.src='https://via.placeholder.com/600x400/1e1b4b/ffffff?text=Project+Code+1';">
+                </div>
+                <div class="gallery-item" onclick="openImg(this)">
+                    <img src="a6.jpeg" onerror="this.src='https://via.placeholder.com/600x400/1e1b4b/ffffff?text=Project+Code+2';">
+                </div>
+            </div>
+        </div>
+
+        <div class="explanation-slider">
+            <div id="slide-content"></div>
+            <div class="slider-nav">
+                <button class="nav-btn" onclick="moveSlide(-1)" id="prevSlide">السابق</button>
+                <span id="slide-num" style="align-self:center; font-weight:bold;">1 / 20</span>
+                <button class="nav-btn" onclick="moveSlide(1)" id="nextSlide">التالي</button>
+            </div>
+        </div>
+
+        <div style="margin: 30px 0;">
+            <input type="text" id="username" placeholder="اكتب اسمك يا بطل هنا...">
+        </div>
+        <button class="btn-main" onclick="initQuiz()">ابدأ تحدي الـ 20 سؤال 🎯</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <div class="status-bar">
+            <div>⏰ <span id="timer-val">00:00</span></div>
+            <div id="progress-text" style="color:var(--secondary)">السؤال 1 / 20</div>
+            <div>⭐ <span id="score-val">0</span></div>
+        </div>
+        <div class="question-zone">
+            <h3 id="q-text"></h3>
+            <div class="code-display" id="q-code"></div>
+            <div id="options-container" class="options-grid"></div>
+            <div id="input-container" class="hidden">
+                <input type="text" id="user-code-input" placeholder="اكتب إجابتك هنا...">
+            </div>
+            <div id="hint-box" style="margin-top:20px; display:none; color:var(--warning); background:rgba(0,0,0,0.3); padding:10px; border-radius:10px;">
+                💡 تلميحة: <span id="hint-text"></span>
+            </div>
+            <div class="control-group">
+                <button class="option-btn" style="background:#555;" onclick="navigate(-1)" id="prev-btn">⬅️ السابق</button>
+                <button class="option-btn" style="background:var(--warning); color:#000;" onclick="skipQuestion()">⏭️ تخطي</button>
+                <button class="option-btn" style="background:var(--wrong);" onclick="revealAnswer()">🔑 إجابة</button>
+                <button class="btn-main" style="flex-grow:1;" onclick="handleStep()">التحقق من الإجابة ✅</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-screen" class="hidden">
+        <h1 style="font-size: 4rem;">🏆</h1>
+        <h2 id="congrats-msg">ممتاز!</h2>
+        <p id="final-stats" style="font-size:1.5rem"></p>
+        <button class="btn-main" onclick="location.reload()">جولة جديدة 🔄</button>
+    </div>
+</div>
+
+<script>
+// وظائف تكبير الصور
+function openImg(el) {
+    const src = el.querySelector('img').src;
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').style.display = 'flex';
+}
+function closeImg() {
+    document.getElementById('lightbox').style.display = 'none';
+}
+
+// بيانات السلايدر والأسئلة (نفس منطقك الأصلي)
+const detailedExplanation = [
+    { title: "البداية والظهور 🚀", code: "When flag clicked -> show", desc: "أول ما ندوس العلم، الكائن لازم يظهر الأول باستخدام أمر Show عشان اللعبة تبدأ." },
+    { title: "الظهور العشوائي 🎲", code: "go to x: pick random -200 to 200 y: 180", desc: "الكائن بيظهر في مكان عشوائي فوق خالص في الشاشة (Y=180) عشان ينزل يهجم."},
+    { title: "حركة الهجوم (Glide) 🛸", code: "glide 2 secs to Rocketship", desc: "أمر بيخلي الكائن ينزلق ببطء لمدة ثانيتين باتجاه سفينة البطل عشان يحاول يخبطها." },
+    { title: "التكرار اللانهائي ♾️", code: "forever block", desc: "البلوك ده بيخلي العدو يفضل ينزل ويهجم طول ما اللعبة شغالة بدون توقف." },
+    { title: "التحكم بالبطل ➡️", code: "when right arrow key pressed", desc: "عند ضغط سهم يمين، السفينة بتلف لليمين وتمشي خطوات للأمام." },
+    { title: "تأثير الحركة 🎭", code: "next costume", desc: "بيغير شكل الكائن بين الصور بتاعته عشان يبان إنه بيمشي أو محركاته شغالة." },
+    { title: "الحركة لليسار ⬅️", code: "when left arrow key pressed", desc: "بنفس الطريقة، السفينة بتلف ناحية اليسار (زاوية -90) عشان تهرب أو تهاجم." },
+    { title: "بوصلة الاتجاه 🧭", code: "point in direction 90 / -90", desc: "الرقم 90 يعني اتجاه اليمين، والرقم -90 يعني اتجاه اليسار." },
+    { title: "شرط التصادم 💥", code: "if touching Ball? then hide", desc: "لو الكائن لمس الكورة (اللي البطل بيضربها)، يختفي فوراً كأنه اتدمر." },
+    { title: "سرعة الحركة ⚡", code: "move 20 steps", desc: "كل ما نضغط سهم، البطل بيمشي 20 خطوة. ده رقم السرعة في الكود بتاعك." },
+    { title: "موسيقى الفضاء 🎵", code: "play sound space ripple until done", desc: "بيشغل صوت خلفية اللعبة وبنحطه جوه forever عشان يفضل شغال طول الجيم." },
+    { title: "نقطة انطلاق البطل 📍", code: "go to x: 0 y: -125", desc: "ده المكان اللي بيبدأ منه البطل في نص الشاشة تحت خالص أول ما نشغل العلم." },
+    { title: "أهمية الـ Show 💡", code: "show block", desc: "لازم نحطه في بداية الكود لأن الكائن لو لمس الكورة هيختفي (Hide)، فلازم يظهر تاني." },
+    { title: "محور الـ Y الرأسي 📏", code: "y: 180 (Top)", desc: "في سكراتش، رقم 180 في Y يعني الكائن موجود في أعلى نقطة في الشاشة." },
+    { title: "محور الـ X الأفقي ↔️", code: "x: -200 to 200", desc: "ده المدى اللي بيتحرك فيه الكائن يمين وشمال بشكل عشوائي." },
+    { title: "تكرار محدد 🔢", code: "repeat 10", desc: "بيخلي الكود اللي جواه يتنفذ 10 مرات بس ويوقف، زي ما انت عامل في كود الحركة." },
+    { title: "أزرق = حركة 🔵", code: "Motion Blocks", desc: "لاحظ إن كل بلوكات الحركة (move, glide, go to) لونها أزرق في سكراتش." },
+    { title: "أصفر = أحداث 🟡", code: "Events Blocks", desc: "البلوكات اللي بتبدأ بكلمة When لونها أصفر، ودي اللي بتبدأ تنفيذ الكود." },
+    { title: "برتقالي = تحكم 🟠", code: "Control Blocks", desc: "زي الـ Forever والـ If، ودي اللي بتتحكم في منطق وسير اللعبة." },
+    { title: "بنفسجي = مظهر 🟣", code: "Looks Blocks", desc: "دي المسؤولة عن الـ Show والـ Hide وتغيير الـ Costume بتاع الكائن." }
+];
+
+const questions = [
+    { type: 'select', q: 'في كود سكراتش، أي زاوية تجعل الكائن يتجه لليمين؟', options: ['90', '-90', '0', '180'], ans: '90', hint: 'اليمين موجب 90' },
+    { type: 'input', q: 'ما اسم الصوت المستخدم في اللعبة؟ (اكتبه كما بالكود)', ans: 'space ripple', hint: 'موجود في البلوك البنفسجي' },
+    { type: 'select', q: 'أمر glide بيخلي الكائن يروح لمكان إيه؟', options: ['مكان عشوائي', 'Rocketship', 'الماوس'], ans: 'Rocketship', hint: 'بص على بلوك الانزلاق الأزرق' },
+    { type: 'input', q: 'كم ثانية يستغرق الكائن في الانزلاق (Glide)؟', ans: '2', hint: 'الرقم المكتوب في بلوك glide' },
+    { type: 'select', q: 'ماذا يحدث للكائن عندما يلمس الـ Ball؟', options: ['يتحرك', 'يختفي', 'يصدر صوتاً'], ans: 'يختفي', hint: 'بص على بلوك hide' },
+    { type: 'input', q: 'كم خطوة (steps) يتحركها البطل عند ضغط الأسهم؟', ans: '20', hint: 'الرقم المكتوب بجانب move' },
+    { type: 'select', q: 'أي بلوك يجعل الصوت يتكرر للأبد؟', options: ['if', 'forever', 'repeat'], ans: 'forever', hint: 'البلوك اللي بيحوط كود الصوت' },
+    { type: 'input', q: 'ما هي قيمة Y التي يبدأ منها العدو الهجوم؟', ans: '180', hint: 'أول رقم في بلوك go to العشوائي' },
+    { type: 'select', q: 'الزاوية -90 تحرك الكائن باتجاه؟', options: ['اليمين', 'اليسار', 'الأعلى'], ans: 'اليسار', hint: 'عكس الـ 90' },
+    { type: 'input', q: 'ما هو البلوك المسؤول عن جعل الكائن يظهر في البداية؟', ans: 'show', hint: 'عكس كلمة hide' },
+    { type: 'select', q: 'لماذا نستخدم next costume؟', options: ['لتغيير اللون', 'لإظهار حركة المشي', 'للفوز'], ans: 'لإظهار حركة المشي', hint: 'بيغير شكل اللبس' },
+    { type: 'input', q: 'ما هي قيمة X في نقطة بداية الـ Rocketship؟', ans: '0', hint: 'موجودة في البلوك اللي تحت خالص' },
+    { type: 'select', q: 'بلوك "When key pressed" لونه إيه؟', options: ['أزرق', 'أصفر', 'أخضر'], ans: 'أصفر', hint: 'بلوكات الأحداث لونها أصفر' },
+    { type: 'input', q: 'العدو بيبدأ يظهر عشوائياً بين x: -200 و x: ...؟', ans: '200', hint: 'الرقم التاني في الـ pick random' },
+    { type: 'select', q: 'أمر "point in direction" موجود في قائمة؟', options: ['Motion', 'Looks', 'Sound'], ans: 'Motion', hint: 'أي حاجة فيها حركة أو اتجاه تبقى Motion' },
+    { type: 'input', q: 'كم قيمة الـ Repeat المستخدمة في كود الحركة؟', ans: '10', hint: 'الرقم المكتوب في البلوك البرتقالي' },
+    { type: 'select', q: 'ما هو الكائن الذي لو لمسه العدو يختفي؟', options: ['Rocketship', 'Ball', 'Edge'], ans: 'Ball', hint: 'بص على شرط الـ If' },
+    { type: 'input', q: 'قيمة Y في بداية الـ Rocketship هي -125، فما قيمة X؟', ans: '0', hint: 'بص على البلوك اللي معاه الصوت' },
+    { type: 'select', q: 'لبدء اللعبة نضغط على؟', options: ['Space', 'Green Flag', 'Stop'], ans: 'Green Flag', hint: 'العلم الأخضر دايماً' },
+    { type: 'input', q: 'ما هو البلوك الذي يوضع بداخل الـ if لتدمير العدو؟', ans: 'hide', hint: 'يجعل الكائن غير مرئي' }
+];
+
+let currentSlide = 0, currentQ = 0, score = 0, seconds = 0, timer;
+
+function showSlide() {
+    const item = detailedExplanation[currentSlide];
+    document.getElementById('slide-content').innerHTML = `
+        <div class="explanation-card">
+            <h3>${item.title}</h3>
+            <div class="code-block">${item.code}</div>
+            <p>${item.desc}</p>
+        </div>
+    `;
+    document.getElementById('slide-num').innerText = `${currentSlide + 1} / 20`;
+    document.getElementById('prevSlide').disabled = currentSlide === 0;
+    document.getElementById('nextSlide').disabled = currentSlide === 19;
+}
+
+function moveSlide(dir) { currentSlide += dir; showSlide(); }
+
+function initQuiz() {
+    if(!document.getElementById('username').value.trim()) return alert("اكتب اسمك أولاً يا بطل!");
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('quiz-screen').classList.remove('hidden');
+    loadQuestion();
+    timer = setInterval(() => {
+        seconds++;
+        let m = Math.floor(seconds/60), s = seconds%60;
+        document.getElementById('timer-val').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+    }, 1000);
+}
+
+function loadQuestion() {
+    const q = questions[currentQ];
+    document.getElementById('progress-text').innerText = `السؤال ${currentQ + 1} / 20`;
+    document.getElementById('q-text').innerText = q.q;
+    document.getElementById('q-code').innerText = q.code || '';
+    document.getElementById('hint-box').style.display = 'none';
+    if(q.type === 'select') {
+        document.getElementById('options-container').classList.remove('hidden');
+        document.getElementById('input-container').classList.add('hidden');
+        document.getElementById('options-container').innerHTML = '';
+        q.options.forEach(opt => {
+            const b = document.createElement('button');
+            b.className = 'option-btn' + (q.userAns === opt ? ' selected' : '');
+            b.innerText = opt;
+            b.onclick = () => {
+                document.querySelectorAll('.option-btn').forEach(x => x.classList.remove('selected'));
+                b.classList.add('selected'); q.userAns = opt;
+            };
+            document.getElementById('options-container').appendChild(b);
+        });
+    } else {
+        document.getElementById('options-container').classList.add('hidden');
+        document.getElementById('input-container').classList.remove('hidden');
+        document.getElementById('user-code-input').value = q.userAns || '';
+    }
+}
+
+function handleStep() {
+    const q = questions[currentQ];
+    const val = q.type === 'select' ? q.userAns : document.getElementById('user-code-input').value.trim();
+    if(!val) return alert("جاوب الأول!");
+    if(val.toString().toLowerCase() === q.ans.toLowerCase()) {
+        if(!q.done) { score += 10; q.done = true; document.getElementById('score-val').innerText = score; }
+        if(currentQ < 19) { currentQ++; loadQuestion(); } else { finishQuiz(); }
+    } else {
+        document.getElementById('hint-box').style.display = 'block';
+        document.getElementById('hint-text').innerText = q.hint;
+    }
+}
+
+function navigate(dir) { if(currentQ + dir >= 0 && currentQ + dir < 20) { currentQ += dir; loadQuestion(); } }
+function skipQuestion() { if(currentQ < 19) { currentQ++; loadQuestion(); } else { finishQuiz(); } }
+function revealAnswer() {
+    if(confirm("هيتم خصم 10 نقاط عشان تشوف الحل، موافق؟")) {
+        score -= 10; document.getElementById('score-val').innerText = score;
+        alert("الحل الصح هو: " + questions[currentQ].ans);
+    }
+}
+function finishQuiz() {
+    clearInterval(timer);
+    document.getElementById('quiz-screen').classList.add('hidden');
+    document.getElementById('result-screen').classList.remove('hidden');
+    document.getElementById('congrats-msg').innerText = `بطل يا ${document.getElementById('username').value}! 👑`;
+    document.getElementById('final-stats').innerText = `جمعت ${score} نقطة في ${Math.floor(seconds/60)} دقيقة`;
+}
+
+window.onload = showSlide;
+</script>
+</body>
+</html>
