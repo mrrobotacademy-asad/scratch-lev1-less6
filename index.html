@@ -141,7 +141,18 @@
         input[type="text"] {
             width: 80%; padding: 15px; background: rgba(0,0,0,0.3); border: 2px solid var(--primary); color: white; border-radius: var(--radius); text-align: center;
         }
-    </style>
+    
+
+.slide-image{
+width:100%;
+max-height:220px;
+object-fit:contain;
+border-radius:15px;
+margin-bottom:15px;
+border:2px solid rgba(255,255,255,0.1);
+background:#111;
+}
+</style>
 </head>
 <body>
 
@@ -172,12 +183,7 @@
                 <div class="gallery-item" onclick="openImg(this)">
                     <img src="a3.png" onerror="this.src='https://via.placeholder.com/600x400/1e1b4b/ffffff?text=Project+Code+1';">
                 </div>
-                <div class="gallery-item" onclick="openImg(this)">
-                    <img src="a4.png" onerror="this.src='https://via.placeholder.com/600x400/1e1b4b/ffffff?text=Project+Code+1';">
-                </div>
-                <div class="gallery-item" onclick="openImg(this)">
-                    <img src="a5.jpeg" onerror="this.src='https://via.placeholder.com/600x400/1e1b4b/ffffff?text=Project+Code+1';">
-                </div>
+              
                 <div class="gallery-item" onclick="openImg(this)">
                     <img src="a6.jpeg" onerror="this.src='https://via.placeholder.com/600x400/1e1b4b/ffffff?text=Project+Code+2';">
                 </div>
@@ -245,26 +251,45 @@ function closeImg() {
 
 // بيانات السلايدر والأسئلة (نفس منطقك الأصلي)
 const detailedExplanation = [
-    { title: "البداية والظهور 🚀", code: "When flag clicked -> show", desc: "أول ما ندوس العلم، الكائن لازم يظهر الأول باستخدام أمر Show عشان اللعبة تبدأ." },
-    { title: "الظهور العشوائي 🎲", code: "go to x: pick random -200 to 200 y: 180", desc: "الكائن بيظهر في مكان عشوائي فوق خالص في الشاشة (Y=180) عشان ينزل يهجم."},
-    { title: "حركة الهجوم (Glide) 🛸", code: "glide 2 secs to Rocketship", desc: "أمر بيخلي الكائن ينزلق ببطء لمدة ثانيتين باتجاه سفينة البطل عشان يحاول يخبطها." },
-    { title: "التكرار اللانهائي ♾️", code: "forever block", desc: "البلوك ده بيخلي العدو يفضل ينزل ويهجم طول ما اللعبة شغالة بدون توقف." },
-    { title: "التحكم بالبطل ➡️", code: "when right arrow key pressed", desc: "عند ضغط سهم يمين، السفينة بتلف لليمين وتمشي خطوات للأمام." },
-    { title: "تأثير الحركة 🎭", code: "next costume", desc: "بيغير شكل الكائن بين الصور بتاعته عشان يبان إنه بيمشي أو محركاته شغالة." },
-    { title: "الحركة لليسار ⬅️", code: "when left arrow key pressed", desc: "بنفس الطريقة، السفينة بتلف ناحية اليسار (زاوية -90) عشان تهرب أو تهاجم." },
-    { title: "بوصلة الاتجاه 🧭", code: "point in direction 90 / -90", desc: "الرقم 90 يعني اتجاه اليمين، والرقم -90 يعني اتجاه اليسار." },
-    { title: "شرط التصادم 💥", code: "if touching Ball? then hide", desc: "لو الكائن لمس الكورة (اللي البطل بيضربها)، يختفي فوراً كأنه اتدمر." },
-    { title: "سرعة الحركة ⚡", code: "move 20 steps", desc: "كل ما نضغط سهم، البطل بيمشي 20 خطوة. ده رقم السرعة في الكود بتاعك." },
-    { title: "موسيقى الفضاء 🎵", code: "play sound space ripple until done", desc: "بيشغل صوت خلفية اللعبة وبنحطه جوه forever عشان يفضل شغال طول الجيم." },
-    { title: "نقطة انطلاق البطل 📍", code: "go to x: 0 y: -125", desc: "ده المكان اللي بيبدأ منه البطل في نص الشاشة تحت خالص أول ما نشغل العلم." },
-    { title: "أهمية الـ Show 💡", code: "show block", desc: "لازم نحطه في بداية الكود لأن الكائن لو لمس الكورة هيختفي (Hide)، فلازم يظهر تاني." },
-    { title: "محور الـ Y الرأسي 📏", code: "y: 180 (Top)", desc: "في سكراتش، رقم 180 في Y يعني الكائن موجود في أعلى نقطة في الشاشة." },
-    { title: "محور الـ X الأفقي ↔️", code: "x: -200 to 200", desc: "ده المدى اللي بيتحرك فيه الكائن يمين وشمال بشكل عشوائي." },
-    { title: "تكرار محدد 🔢", code: "repeat 10", desc: "بيخلي الكود اللي جواه يتنفذ 10 مرات بس ويوقف، زي ما انت عامل في كود الحركة." },
-    { title: "أزرق = حركة 🔵", code: "Motion Blocks", desc: "لاحظ إن كل بلوكات الحركة (move, glide, go to) لونها أزرق في سكراتش." },
-    { title: "أصفر = أحداث 🟡", code: "Events Blocks", desc: "البلوكات اللي بتبدأ بكلمة When لونها أصفر، ودي اللي بتبدأ تنفيذ الكود." },
-    { title: "برتقالي = تحكم 🟠", code: "Control Blocks", desc: "زي الـ Forever والـ If، ودي اللي بتتحكم في منطق وسير اللعبة." },
-    { title: "بنفسجي = مظهر 🟣", code: "Looks Blocks", desc: "دي المسؤولة عن الـ Show والـ Hide وتغيير الـ Costume بتاع الكائن." }
+    { title: "البداية والظهور 🚀", code: "When flag clicked -> show",
+        image: "Images/When-flag-clicked-show.png", desc: "أول ما ندوس العلم، الكائن لازم يظهر الأول باستخدام أمر Show عشان اللعبة تبدأ." },
+        { title: "حركة الهجوم (Glide) 🛸", code: "glide 2 secs to Rocketship",
+        image: "Images/glide-2-secs-to-Rocketship.png", desc: "أمر بيخلي الكائن ينزلق ببطء لمدة ثانيتين باتجاه سفينة البطل عشان يحاول يخبطها." },
+    { title: "التكرار اللانهائي ♾️", code: "forever block",
+        image: "Images/forever-block.png", desc: "البلوك ده بيخلي العدو يفضل ينزل ويهجم طول ما اللعبة شغالة بدون توقف." },
+    { title: "التحكم بالبطل ➡️", code: "when right arrow key pressed",
+        image: "Images/when-right-arrow-key-pressed.png", desc: "عند ضغط سهم يمين، السفينة بتلف لليمين وتمشي خطوات للأمام." },
+    { title: "تأثير الحركة 🎭", code: "next costume",
+        image: "Images/next-costume.png", desc: "بيغير شكل الكائن بين الصور بتاعته عشان يبان إنه بيمشي أو محركاته شغالة." },
+    { title: "الحركة لليسار ⬅️", code: "when left arrow key pressed",
+        image: "Images/when-left-arrow-key-pressed.png", desc: "بنفس الطريقة، السفينة بتلف ناحية اليسار (زاوية -90) عشان تهرب أو تهاجم." },
+    { title: "تغيير الاتجاة  🧭", code: "point in direction 90 / -90",
+        image: "Images/move-10.png", desc: "التحرك بالسالب" },
+    { title: "شرط التصادم 💥", code: "if touching Ball? then hide",
+        image: "Images/if-touching-Ball-then-hide.png", desc: "لو الكائن لمس الكورة (اللي البطل بيضربها)، يختفي فوراً كأنه اتدمر." },
+    { title: "سرعة الحركة ⚡", code: "Glide 2 secs to Rocketship",
+        image: "Images/glide-2-secs-to-Rocketship.png", desc: "الروبوت يتزحلق الى الاسفل ليصل الى السفينة الفضائية " },
+    { title: "موسيقى الفضاء 🎵", code: "play sound space ripple until done",
+        image: "Images/play-sound-space-ripple-until-done.png", desc: "بيشغل صوت خلفية اللعبة وبنحطه جوه forever عشان يفضل شغال طول الجيم." },
+    { title: "نقطة انطلاق البطل 📍", code: "go to x: 240 to 240 and y: 180 ",
+        image: "Images/go-to-x-y-180.png", desc: "دة مكان نزول الروبوت الفضائى من فوق اعلى نقطة فى الشاشة" },
+    { title: "أهمية الـ Show 💡", code: "show block",
+        image: "Images/show-block.png", desc: "لازم نحطه في بداية الكود لأن الكائن لو لمس الكورة هيختفي (Hide)، فلازم يظهر تاني." },
+    { title: "محور الـ Y الرأسي 📏", code: "y: 180 (Top)",
+        image: "Images/y-180-Top.png", desc: "في سكراتش، رقم 180 في Y يعني الكائن موجود في أعلى نقطة في الشاشة." },
+    { title: "محور الـ X الأفقي ↔️", code: "x: -240 to 240",
+        image: "Images/x-200-to-200.png", desc: "ده المدى اللي بيتحرك فيه الكائن يمين وشمال بشكل عشوائي." },
+    { title: "تكرار محدد 🔢", code: "repeat 10",
+        image: "Images/repeat-10.png", desc: "بيخلي الكود اللي جواه يتنفذ 10 مرات بس ويوقف، زي ما انت عامل في كود الحركة." },
+    { title: "أزرق = حركة 🔵", code: "Motion Blocks",
+        image: "Images/Motion-Blocks.png", desc: "لاحظ إن كل بلوكات الحركة (move, glide, go to) لونها أزرق في سكراتش." },
+    { title: "أصفر = أحداث 🟡", code: "Events Blocks",
+        image: "Images/Events-Blocks.png", desc: "البلوكات اللي بتبدأ بكلمة When لونها أصفر، ودي اللي بتبدأ تنفيذ الكود." },
+    { title: "برتقالي = تحكم 🟠", code: "Control Blocks",
+        image: "Images/Control-Blocks.png", desc: "زي الـ Forever والـ If، ودي اللي بتتحكم في منطق وسير اللعبة." },
+    { title: "بنفسجي = مظهر 🟣", code: "Looks Blocks",
+        image: "Images/Looks-Blocks.png", desc: "دي المسؤولة عن الـ Show والـ Hide وتغيير الـ Costume بتاع الكائن." },
+		
 ];
 
 const questions = [
@@ -297,6 +322,10 @@ function showSlide() {
     document.getElementById('slide-content').innerHTML = `
         <div class="explanation-card">
             <h3>${item.title}</h3>
+            <img src="${item.image}"
+              alt="${item.title}"
+              class="slide-image"
+              onerror="this.style.display='none'">
             <div class="code-block">${item.code}</div>
             <p>${item.desc}</p>
         </div>
@@ -380,3 +409,4 @@ window.onload = showSlide;
 </script>
 </body>
 </html>
+
